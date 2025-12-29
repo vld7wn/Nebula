@@ -180,8 +180,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     const NebulaLogo(
-                                      logoSize: 80,
-                                      fontSize: 28,
+                                      logoSize: 60,
+                                      fontSize: 23,
                                     ),
                                     const SizedBox(height: 8),
                                     Text(

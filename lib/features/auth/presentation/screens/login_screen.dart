@@ -212,8 +212,8 @@ class _LoginScreenState extends State<LoginScreen>
                                   children: [
                                     // Логотип (горизонтальный, компактный)
                                     const NebulaLogo(
-                                      logoSize: 80,
-                                      fontSize: 28,
+                                      logoSize: 60,
+                                      fontSize: 23,
                                     ),
                                     const SizedBox(height: 32),
                                     // Поле email/логин

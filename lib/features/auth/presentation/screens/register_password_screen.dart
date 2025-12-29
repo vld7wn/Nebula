@@ -96,7 +96,7 @@ class _RegisterPasswordScreenState extends State<RegisterPasswordScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const NebulaLogo(logoSize: 80, fontSize: 28),
+                        const NebulaLogo(logoSize: 60, fontSize: 23),
                         const SizedBox(height: 8),
                         Text(
                           'Создание пароля',
