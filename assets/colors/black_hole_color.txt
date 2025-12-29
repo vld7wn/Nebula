@@ -1,0 +1,32 @@
+/* CSS HEX */
+--eminence: #662a83;
+--vivid-violet: #8437a7;
+--valentino: #2c0e3a;
+--wine-berry: #581652;
+--trendy-pink: #8e5f9e;
+--plum: #7d2877;
+--honey-flower: #541f68;
+--haiti: #1b0927;
+--grape: #3f1755;
+
+/* SCSS HEX */
+$eminence: #662a83;
+$vivid-violet: #8437a7;
+$valentino: #2c0e3a;
+$wine-berry: #581652;
+$trendy-pink: #8e5f9e;
+$plum: #7d2877;
+$honey-flower: #541f68;
+$haiti: #1b0927;
+$grape: #3f1755;
+
+/* SCSS RGB */
+$eminence: rgba(102,42,131,1);
+$vivid-violet: rgba(132,55,167,1);
+$valentino: rgba(44,14,58,1);
+$wine-berry: rgba(88,22,82,1);
+$trendy-pink: rgba(142,95,158,1);
+$plum: rgba(125,40,119,1);
+$honey-flower: rgba(84,31,104,1);
+$haiti: rgba(27,9,39,1);
+$grape: rgba(63,23,85,1);

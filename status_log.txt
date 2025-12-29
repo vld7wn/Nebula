@@ -1,0 +1,18 @@
+Текущая ветка: main
+Ветка отстает от «origin/main» на 16 коммитов и может быть быстро перемотана.
+  (используйте «git pull», чтобы обновить вашу локальную ветку)
+
+Изменения, которые не в индексе для коммита:
+  (используйте «git add <файл>...», чтобы добавить файл в индекс)
+  (используйте «git restore <файл>...», чтобы отменить изменения в рабочем каталоге)
+	изменено:      lib/features/chat_detail/presentation/widgets/capsule_crystal_send_flow.dart
+	изменено:      lib/features/home/presentation/widgets/time_capsules/time_capsule_grid_card.dart
+	изменено:      lib/shared_widgets/temporal_crystal/models/temporal_crystal_config.dart
+	изменено:      lib/shared_widgets/temporal_crystal/test/temporal_crystal_test_screen.dart
+
+Неотслеживаемые файлы:
+  (используйте «git add <файл>...», чтобы добавить в то, что будет включено в коммит)
+	pull_log.txt
+	status_log.txt
+
+индекс пуст (используйте «git add» и/или «git commit -a»)

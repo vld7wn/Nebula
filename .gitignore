@@ -1,0 +1,44 @@
+# General
+.DS_Store
+.idea
+.vscode
+build/
+.dart_tool/
+.packages
+.pub-cache/
+
+# Android
+android/app/build/
+android/build/
+android/.gradle/
+android/.kotlin/
+android/key.properties
+android/local.properties
+
+# iOS
+ios/Pods/
+ios/build/
+ios/Flutter/App.framework
+ios/Flutter/ephemeral/
+ios/.symlinks/
+ios/Runner.xcworkspace/
+ios/Runner.xcodeproj/project.xcworkspace/
+ios/Runner.xcodeproj/xcuserdata/
+
+# Linux
+linux/build/
+linux/.cmake/
+
+# macOS
+macos/build/
+macos/Flutter/ephemeral/
+macos/.symlinks/
+macos/Pods/
+macos/Runner.xcworkspace/
+macos/Runner.xcodeproj/project.xcworkspace/
+macos/Runner.xcodeproj/xcuserdata/
+
+# Windows
+windows/build/
+windows/flutter/ephemeral/
+windows/.vs/

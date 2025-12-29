@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "nebula-messenger-9e1dd",
+    "android": "nebula-messenger-9e1dd"
+  },
+  "targets": {},
+  "etags": {}
+}

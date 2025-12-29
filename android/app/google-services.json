@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "261263235658",
+    "project_id": "nebula-messenger-9e1dd",
+    "storage_bucket": "nebula-messenger-9e1dd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:261263235658:android:1a703434c4a7f969f1e4b3",
+        "android_client_info": {
+          "package_name": "com.example.nebula"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "261263235658-1r6iol3u727jiqncspkdmqo9jv31ink8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nebula",
+            "certificate_hash": "3d2414e134d6ecf0de919b58798f576bf8c2f0f9"
+          }
+        },
+        {
+          "client_id": "261263235658-eps9kh9klhbe40khffgc2gfhuh4nc9m5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nebula",
+            "certificate_hash": "7a6c7485a91c7ce061a0b7dd00bf19e755bcaf64"
+          }
+        },
+        {
+          "client_id": "261263235658-9ra2nc6im8s1v78rd3blmpss5sba4miq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOSvboDAvi3Th9CWguPWAYU_yz_rUQvYY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "261263235658-9ra2nc6im8s1v78rd3blmpss5sba4miq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
