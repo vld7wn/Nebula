@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nebula/core/services/otp_code_generator.dart';
+import 'package:nebula/shared/widgets/animated_code_display.dart';
 import 'package:nebula/shared/widgets/nebula_button.dart';
 import 'package:nebula/shared/widgets/nebula_background.dart';
 import 'package:nebula/shared/widgets/nebula_logo.dart';
@@ -21,9 +23,12 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late AnimationController _pullController;
   late AnimationController _appearController;
+
+  // Генератор одноразового кода
+  late OtpCodeGenerator _otpGenerator;
 
   // Анимации засасывания (FORWARD)
   late Animation<double> _pullAnimation;
@@ -51,6 +56,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   @override
   void initState() {
     super.initState();
+
+    // Инициализируем генератор кода
+    _otpGenerator = OtpCodeGenerator();
+
+    // Подписываемся на lifecycle события
+    WidgetsBinding.instance.addObserver(this);
 
     // Контроллер для засасывания
     _pullController = AnimationController(
@@ -229,7 +240,20 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // При сворачивании приложения — генерируем новый код
+    if (state == AppLifecycleState.paused) {
+      _otpGenerator.onAppPaused();
+    } else if (state == AppLifecycleState.resumed) {
+      _otpGenerator.onAppResumed();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _otpGenerator.dispose();
     _pullController.dispose();
     _appearController.dispose();
     super.dispose();
@@ -295,7 +319,23 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                         ),
                       ),
 
-                      SizedBox(height: screenHeight < 700 ? 150 : 300),
+                      const SizedBox(height: 24),
+
+                      // Одноразовый код для регистрации
+                      Transform.scale(
+                        scale: logoScaleVal.clamp(0.0, 1.0),
+                        child: Opacity(
+                          opacity: logoOpacityVal.clamp(0.0, 1.0),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: AnimatedCodeDisplay(
+                              generator: _otpGenerator,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: screenHeight < 700 ? 80 : 150),
 
                       // Кнопки
                       Padding(

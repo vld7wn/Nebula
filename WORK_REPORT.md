@@ -90,12 +90,4 @@
 #### 4. Зависимости
 
 - Добавлен `google_fonts` для шрифта Archivo
-- Добавлен `flutter_svg` (на будущее)
-
-
-
-Доменное имя	                        Тип		            Ценить
-nebula.com	                            ТЕКСТ		v=spf1 include:_spf.firebasemail.com ~all
-nebula.com	                            ТЕКСТ		firebase=nebula-messenger-9e1dd
-firebase1._domainkey.nebula.com	        CNAME		mail-nebula-com.dkim1._domainkey.firebasemail.com.
-firebase2._domainkey.nebula.com	        CNAME		mail-nebula-com.dkim2._domainkey.firebasemail.com.
+- Добавлен `flutter_svg` (на будущее)                    
