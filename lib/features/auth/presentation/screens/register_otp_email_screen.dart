@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nebula/features/auth/data/datasources/email_otp_service.dart';
 import 'package:nebula/features/auth/data/models/registration_data.dart';
 import 'package:nebula/shared/utils/app_notification.dart';
 import 'package:nebula/shared/widgets/nebula_background.dart';
@@ -9,21 +10,22 @@ import 'package:nebula/shared/widgets/nebula_button.dart';
 import 'package:nebula/shared/widgets/nebula_logo.dart';
 import 'register_password_screen.dart';
 
-/// Шаг 2: Проверка OTP кода
-class RegisterOtpScreen extends StatefulWidget {
+/// Шаг 2: Проверка OTP кода по email
+class RegisterOtpEmailScreen extends StatefulWidget {
   final RegistrationData data;
 
-  const RegisterOtpScreen({super.key, required this.data});
+  const RegisterOtpEmailScreen({super.key, required this.data});
 
   @override
-  State<RegisterOtpScreen> createState() => _RegisterOtpScreenState();
+  State<RegisterOtpEmailScreen> createState() => _RegisterOtpEmailScreenState();
 }
 
-class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
+class _RegisterOtpEmailScreenState extends State<RegisterOtpEmailScreen> {
   bool _isLoading = false;
   int _secondsRemaining = 60;
   Timer? _timer;
 
+  final _emailOtpService = EmailOtpService();
   final List<TextEditingController> _controllers = List.generate(
     6,
     (_) => TextEditingController(),
@@ -59,19 +61,26 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // TODO: Реальная проверка OTP кода
-      // Пока просто переходим на следующий экран
-      await Future.delayed(const Duration(milliseconds: 500));
+      final verified = await _emailOtpService.verifyOtp(
+        widget.data.email,
+        _code,
+      );
 
-      if (mounted) {
+      if (verified && mounted) {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => RegisterPasswordScreen(data: widget.data),
           ),
         );
       }
+    } on EmailOtpException catch (e) {
+      if (mounted) {
+        AppNotification.showError(context, e.message);
+      }
     } catch (e) {
-      AppNotification.showError(context, 'Неверный код');
+      if (mounted) {
+        AppNotification.showError(context, 'Ошибка: $e');
+      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -82,9 +91,27 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
   Future<void> _resendCode() async {
     if (_secondsRemaining > 0) return;
 
-    // TODO: Повторная отправка кода
-    AppNotification.showSuccess(context, 'Код отправлен повторно');
-    _startTimer();
+    setState(() => _isLoading = true);
+
+    try {
+      await _emailOtpService.sendOtp(widget.data.email);
+      if (mounted) {
+        AppNotification.showSuccess(context, 'Код отправлен повторно');
+        _startTimer();
+      }
+    } on EmailOtpException catch (e) {
+      if (mounted) {
+        AppNotification.showError(context, e.message);
+      }
+    } catch (e) {
+      if (mounted) {
+        AppNotification.showError(context, 'Ошибка: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override
@@ -118,7 +145,7 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
                         const NebulaLogo(logoSize: 60, fontSize: 23),
                         const SizedBox(height: 8),
                         Text(
-                          'Подтверждение',
+                          'Подтверждение email',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.7),
                             fontSize: 16,
@@ -155,7 +182,7 @@ class _RegisterOtpScreenState extends State<RegisterOtpScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: List.generate(6, (index) {
                             return SizedBox(
-                              width: 45,
+                              width: 35,
                               height: 55,
                               child: TextField(
                                 controller: _controllers[index],

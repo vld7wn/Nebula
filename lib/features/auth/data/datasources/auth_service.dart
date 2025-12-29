@@ -64,6 +64,100 @@ class AuthService {
     await _auth.sendPasswordResetEmail(email: email);
   }
 
+  /// Верификация номера телефона
+  /// Отправляет SMS с кодом подтверждения
+  Future<void> verifyPhoneNumber({
+    required String phoneNumber,
+    required void Function(String verificationId, int? resendToken) onCodeSent,
+    required void Function(PhoneAuthCredential credential)
+    onVerificationCompleted,
+    required void Function(FirebaseAuthException e) onVerificationFailed,
+    required void Function(String verificationId) onCodeAutoRetrievalTimeout,
+    int? resendToken,
+  }) async {
+    await _auth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      timeout: const Duration(seconds: 60),
+      forceResendingToken: resendToken,
+      verificationCompleted: onVerificationCompleted,
+      verificationFailed: onVerificationFailed,
+      codeSent: onCodeSent,
+      codeAutoRetrievalTimeout: onCodeAutoRetrievalTimeout,
+    );
+  }
+
+  /// Проверка OTP кода телефона
+  /// Возвращает credential для дальнейшего использования
+  PhoneAuthCredential getPhoneCredential({
+    required String verificationId,
+    required String smsCode,
+  }) {
+    return PhoneAuthProvider.credential(
+      verificationId: verificationId,
+      smsCode: smsCode,
+    );
+  }
+
+  /// Привязка телефона к существующему аккаунту
+  Future<UserCredential> linkPhoneCredential(
+    PhoneAuthCredential credential,
+  ) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw FirebaseAuthException(
+        code: 'no-user',
+        message: 'Пользователь не авторизован',
+      );
+    }
+    return await user.linkWithCredential(credential);
+  }
+
+  /// Вход через телефон
+  Future<UserCredential> signInWithPhoneCredential(
+    PhoneAuthCredential credential,
+  ) async {
+    return await _auth.signInWithCredential(credential);
+  }
+
+  // ==================== EMAIL LINK AUTHENTICATION ====================
+
+  /// Отправка ссылки для входа на email
+  /// Пользователь получит письмо со ссылкой для авторизации
+  Future<void> sendSignInLinkToEmail({
+    required String email,
+    required String continueUrl,
+    bool handleCodeInApp = true,
+    String? androidPackageName,
+    String? iOSBundleId,
+  }) async {
+    final actionCodeSettings = ActionCodeSettings(
+      url: continueUrl,
+      handleCodeInApp: handleCodeInApp,
+      androidPackageName: androidPackageName ?? 'com.mikhail.nebula',
+      androidInstallApp: true,
+      androidMinimumVersion: '21',
+      iOSBundleId: iOSBundleId ?? 'com.mikhail.nebula',
+    );
+
+    await _auth.sendSignInLinkToEmail(
+      email: email,
+      actionCodeSettings: actionCodeSettings,
+    );
+  }
+
+  /// Проверка, является ли ссылка Email Link
+  bool isSignInWithEmailLink(String emailLink) {
+    return _auth.isSignInWithEmailLink(emailLink);
+  }
+
+  /// Вход по email ссылке
+  Future<UserCredential> signInWithEmailLink({
+    required String email,
+    required String emailLink,
+  }) async {
+    return await _auth.signInWithEmailLink(email: email, emailLink: emailLink);
+  }
+
   /// Выход
   Future<void> signOut() async {
     await _googleSignIn.signOut();

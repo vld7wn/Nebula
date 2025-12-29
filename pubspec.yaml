@@ -43,7 +43,7 @@ dependencies:
   path_provider: ^2.1.2
   permission_handler: ^11.3.0
   open_filex: ^4.3.2
-  url_launcher: ^6.2.4
+  url_launcher: ^6.3.2
   audioplayers: ^6.5.1
   sensors_plus: ^6.1.0
   flutter_bloc: ^9.1.1
@@ -74,6 +74,9 @@ dependencies:
   path: ^1.9.1
   crypto: ^3.0.7
   get_it: ^9.2.0
+  cloud_functions: ^6.0.5
+  shared_preferences: ^2.5.4
+  app_links: ^7.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -7,6 +7,10 @@ class RegistrationData {
   String lastName;
   String? avatarUrl;
 
+  // Phone Auth данные
+  String? verificationId;
+  int? resendToken;
+
   RegistrationData({
     this.email = '',
     this.phone = '',
@@ -14,5 +18,7 @@ class RegistrationData {
     this.firstName = '',
     this.lastName = '',
     this.avatarUrl,
+    this.verificationId,
+    this.resendToken,
   });
 }

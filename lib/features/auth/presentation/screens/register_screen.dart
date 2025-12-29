@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nebula/features/auth/data/datasources/auth_service.dart';
 import 'package:nebula/features/auth/data/models/registration_data.dart';
 import 'package:nebula/shared/utils/app_notification.dart';
 import 'package:nebula/shared/widgets/glass_text_field.dart';
@@ -6,7 +7,10 @@ import 'package:nebula/shared/widgets/nebula_background.dart';
 import 'package:nebula/shared/widgets/glass_container.dart';
 import 'package:nebula/shared/widgets/nebula_button.dart';
 import 'package:nebula/shared/widgets/nebula_logo.dart';
-import 'register_otp_screen.dart';
+import 'package:nebula/shared/widgets/phone_input_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'register_email_pending_screen.dart';
+import 'register_otp_phone_screen.dart';
 import 'welcome_screen.dart';
 
 /// Экран регистрации - Шаг 1: Выбор метода (Email или телефон)
@@ -31,8 +35,10 @@ class _RegisterScreenState extends State<RegisterScreen>
   // true = email, false = phone
   bool _isEmailMethod = true;
 
+  final _authService = AuthService();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
+  String _fullPhoneNumber = '';
 
   @override
   void initState() {
@@ -101,7 +107,6 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   Future<void> _continue() async {
     final email = _emailController.text.trim();
-    final phone = _phoneController.text.trim();
 
     if (_isEmailMethod) {
       if (email.isEmpty) {
@@ -112,35 +117,94 @@ class _RegisterScreenState extends State<RegisterScreen>
         AppNotification.showError(context, 'Некорректный email');
         return;
       }
+
+      // Для email — отправляем Email Link
+      setState(() => _isLoading = true);
+
+      try {
+        // Сохраняем email для последующей верификации
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('pendingEmail', email);
+
+        // Отправляем ссылку для входа
+        await _authService.sendSignInLinkToEmail(
+          email: email,
+          continueUrl:
+              'https://nebula-messenger-9e1dd.firebaseapp.com/finishSignUp',
+        );
+
+        if (mounted) {
+          setState(() => _isLoading = false);
+
+          final data = RegistrationData(email: email);
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => RegisterEmailPendingScreen(data: data),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          AppNotification.showError(context, 'Ошибка: $e');
+        }
+      }
     } else {
-      if (phone.isEmpty) {
+      // Для телефона — отправляем SMS через Firebase
+      if (_phoneController.text.isEmpty) {
         AppNotification.showError(context, 'Введите номер телефона');
         return;
       }
-    }
 
-    setState(() => _isLoading = true);
+      // Используем полный номер с кодом страны
+      final formattedPhone = _fullPhoneNumber.isNotEmpty
+          ? _fullPhoneNumber
+          : '+7${_phoneController.text}';
 
-    try {
-      // TODO: Отправка OTP кода
+      setState(() => _isLoading = true);
 
-      final data = RegistrationData(
-        email: _isEmailMethod ? email : '',
-        phone: !_isEmailMethod ? phone : '',
-      );
+      try {
+        await _authService.verifyPhoneNumber(
+          phoneNumber: formattedPhone,
+          onCodeSent: (verificationId, resendToken) {
+            if (mounted) {
+              setState(() => _isLoading = false);
 
-      if (mounted) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => RegisterOtpScreen(data: data),
-          ),
+              final data = RegistrationData(
+                phone: formattedPhone,
+                verificationId: verificationId,
+                resendToken: resendToken,
+              );
+
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => RegisterOtpPhoneScreen(data: data),
+                ),
+              );
+            }
+          },
+          onVerificationCompleted: (credential) {
+            // Автоматическая верификация (на Android)
+            // Можно использовать для автоматического входа
+          },
+          onVerificationFailed: (e) {
+            if (mounted) {
+              setState(() => _isLoading = false);
+              AppNotification.showError(
+                context,
+                'Ошибка отправки SMS: ${e.message ?? e.code}',
+              );
+            }
+          },
+          onCodeAutoRetrievalTimeout: (verificationId) {
+            // Таймаут автозаполнения — ничего не делаем
+          },
         );
-      }
-    } catch (e) {
-      AppNotification.showError(context, 'Ошибка: ${e.toString()}');
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
+      } catch (e) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          AppNotification.showError(context, 'Ошибка: ${e.toString()}');
+        }
       }
     }
   }
@@ -332,12 +396,13 @@ class _RegisterScreenState extends State<RegisterScreen>
                                               keyboardType:
                                                   TextInputType.emailAddress,
                                             )
-                                          : GlassTextField(
+                                          : PhoneInputField(
                                               key: const ValueKey('phone'),
                                               controller: _phoneController,
                                               hintText: 'Номер телефона',
-                                              prefixIcon: Icons.phone_outlined,
-                                              keyboardType: TextInputType.phone,
+                                              onFullPhoneChanged: (phone) {
+                                                _fullPhoneNumber = phone;
+                                              },
                                             ),
                                     ),
                                     const SizedBox(height: 24),
