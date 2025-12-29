@@ -9,6 +9,7 @@ import 'package:nebula/shared/widgets/glass_container.dart';
 import 'package:nebula/shared/widgets/nebula_button.dart';
 import 'package:nebula/shared/widgets/nebula_logo.dart';
 import 'welcome_screen.dart';
+import 'forgot_password_screen.dart';
 
 /// Экран авторизации
 class LoginScreen extends StatefulWidget {
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   bool _isAnimating = false;
   bool _isLoading = false;
+  String _navigationTarget = 'welcome'; // 'welcome' or 'forgot_password'
 
   final _authService = AuthService();
   final _userService = UserService();
@@ -69,7 +71,11 @@ class _LoginScreenState extends State<LoginScreen>
 
     _pullController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        _navigateToWelcome();
+        if (_navigationTarget == 'forgot_password') {
+          _navigateToForgotPassword();
+        } else {
+          _navigateToWelcome();
+        }
       }
     });
   }
@@ -79,6 +85,18 @@ class _LoginScreenState extends State<LoginScreen>
 
     setState(() {
       _isAnimating = true;
+      _navigationTarget = 'welcome';
+    });
+
+    _pullController.forward();
+  }
+
+  void _goToForgotPassword() {
+    if (_isAnimating) return;
+
+    setState(() {
+      _isAnimating = true;
+      _navigationTarget = 'forgot_password';
     });
 
     _pullController.forward();
@@ -175,6 +193,22 @@ class _LoginScreenState extends State<LoginScreen>
     });
   }
 
+  void _navigateToForgotPassword() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const ForgotPasswordScreen(),
+          transitionDuration: Duration.zero,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return child;
+          },
+        ),
+      );
+    });
+  }
+
   @override
   void dispose() {
     _pullController.dispose();
@@ -235,9 +269,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: TextButton(
-                                        onPressed: () {
-                                          // TODO: Навигация на восстановление пароля
-                                        },
+                                        onPressed: _goToForgotPassword,
                                         child: Text(
                                           'Forgot Password?',
                                           style: TextStyle(
